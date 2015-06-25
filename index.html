@@ -20,12 +20,12 @@ canvas{
 	<script src="simplex-noise.js"></script>
 	<script src="generation.js"></script>
 	<script>
-var size = 100;
+var size = 70;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
-camera.position.z = size * 1.2;
-camera.position.y = size;
+camera.position.z = size;
+camera.position.y = size * 0.8;
 camera.position.x = 0;
 camera.lookAt(new THREE.Vector3(0, size / 2, size / 2));
 var renderer = new THREE.WebGLRenderer();
@@ -33,29 +33,25 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 box = new THREE.Object3D();
+box.position.y = size / 4;
 box.rotation.x = -Math.PI / 2;
 box.rotation.z += Math.PI / 8;
 scene.add(box);
 
-var terrain = terrain(Math.random);
-
-var plane = new THREE.PlaneGeometry(size - 1, size - 1, size - 1, size - 1);
-var i, x, y;
-for(x = 0; x < size; x++){
-	for(y = 0; y < size; y++){
-		i = x * size + y;
-		plane.vertices[i].z = terrain.z(x, y);
-	}
-}
-plane.computeFaceNormals();
-plane.computeVertexNormals();
-
-var mesh = new THREE.Mesh(plane, new THREE.MeshNormalMaterial({
+var landscape = landscape(Math.random);
+var terrain = new THREE.Mesh(landscape.terrain(size), new THREE.MeshNormalMaterial({
 	wireframe: true
 }));
-box.add(mesh);
+box.add(terrain);
 
-renderer.render(scene, camera);
+function render(){
+	requestAnimationFrame(render);
+	renderer.render(scene, camera);
+}
+render();
+setInterval(function(){
+	box.rotation.z += 0.005;
+}, 10)
 	</script>
 </body>
 </html>
